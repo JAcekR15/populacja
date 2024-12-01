@@ -1,3 +1,5 @@
+let czas = 60;
+
 var dane = [];
 var c1;
 var c2;
@@ -9,6 +11,10 @@ const div1 = document.querySelector("#country1");
 const div2 = document.querySelector("#country2");
 const p1 = document.querySelector("#co1");
 const p2 = document.querySelector("#co2");
+let progressBar = document.getElementById("progress");
+let timeLeft = 60; // total time in seconds
+let progressInterval;
+
 function EL1() {
   if (dane[c1].population > dane[c2].population) {
     correct();
@@ -59,9 +65,9 @@ async function Wstaw() {
 const btn = document.querySelector("#btn1");
 
 btn.addEventListener("click", () => {
+  startTimer(); // Start the timer when the button is clicked
   const progress = document.querySelector("#progress");
   progress.value = 100;
-  let czas = 60;
   const interval = setInterval(() => {
     czas--;
     progress.value = (czas / 60) * 100;
@@ -81,7 +87,6 @@ btn.addEventListener("click", () => {
       div2.style.backgroundColor = "";
       img1.disabled = true;
       img2.disabled = true;
-      return 0;
     }
   }, 1000);
 
@@ -106,6 +111,9 @@ btn.addEventListener("click", () => {
 function correct() {
   const correct = document.querySelector("#correct");
   c++;
+  timeLeft = 60;
+  czas = 60;
+  console.log(timeLeft);
   correct.textContent = c;
 
   if (dane[c1].population > dane[c2].population) {
@@ -163,6 +171,9 @@ function incorrect() {
         div2.style.backgroundColor = "";
         div1.disabled = false;
         div2.disabled = false;
+         czas = 60;
+         
+
       }
     }, time);
   }
@@ -180,9 +191,39 @@ function incorrect() {
     div2.style.backgroundColor = "";
     img1.disabled = true;
     img2.disabled = true;
-    return 0;
   }
-  
 }
 
+function updateProgressBar() {
+  if (timeLeft > 0) {
+    timeLeft--;
+    progressBar.value = 60 - timeLeft;
+  } else {
+    clearInterval(progressInterval);
+    const lose = document.querySelector("#lose");
+    lose.style.display = "";
+    lose.textContent = "Przegrałeś!";
+    btn.textContent = "Resetuj";
+    btn.style.display = "";
+    img1.src = "";
+    img2.src = "";
+    p1.textContent = "";
+    p2.textContent = "";
+    div1.style.backgroundColor = "";
+    div2.style.backgroundColor = "";
+    img1.disabled = true;
+    img2.disabled = true;
+  }
+}
+
+function startTimer() {
+  timeLeft = 60;
+  progressBar.value = 0;
+  clearInterval(progressInterval);
+  progressInterval = setInterval(updateProgressBar, 1000);
+}
+
+document.getElementById("btn1").addEventListener("click", startTimer);
+
 Pobierz();
+
